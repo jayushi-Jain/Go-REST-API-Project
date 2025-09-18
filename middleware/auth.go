@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
+	"goAPI/auth" // Update this to your module name
 	"net/http"
-	"netflix/auth" // Update this to your module name
 	"strings"
 )
 

@@ -12,7 +12,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 
-	"netflix/auth" // Update this to your module name
+	"goAPI/auth" // Update this to your module name
 )
 
 type Config struct {
@@ -26,7 +26,7 @@ func loadConfig() *Config {
 	godotenv.Load()
 
 	return &Config{
-		DatabaseURL: getEnv("DATABASE_URL", "postgres://user:password@localhost/netflix_clone?sslmode=disable"),
+		DatabaseURL: getEnv("DATABASE_URL", "postgres://user:password@localhost/goAPI_clone?sslmode=disable"),
 		JWTSecret:   getEnv("JWT_SECRET", "your-super-secret-jwt-key-change-this-in-production"),
 		Port:        getEnv("PORT", "8080"),
 	}

@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: goAPI_postgres
+    environment:
+      POSTGRES_DB: goAPI
+      POSTGRES_USER: goAPI_user
+      POSTGRES_PASSWORD: goAPI_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goAPI_user -d goAPI"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Uncomment when ready to run the Go app in Docker
+  # app:
+  #   build: .
+  #   container_name: goAPI_app
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     DATABASE_URL: postgres://goAPI_user:goAPI_password@postgres:5432/goAPI?sslmode=disable
+  #     JWT_SECRET: your-super-secret-jwt-key-change-this-in-production-make-it-32-chars-long
+  #     PORT: 8080
+
+volumes:
+  postgres_data:
+
+---
+# Dockerfile (for later when you want to containerize the Go app)
+FROM golang:1.21-alpine AS builder
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+
+EXPOSE 8080
+CMD ["./main"]

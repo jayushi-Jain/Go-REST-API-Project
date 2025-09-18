@@ -1,4 +1,4 @@
-module netflix
+module goAPI
 
 go 1.24.6
 
