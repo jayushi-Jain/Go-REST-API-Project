@@ -55,6 +55,25 @@ func (s *Service) CreateUser(req CreateUserRequest) (*AuthResponse, error) {
 	}, nil
 }
 
+func (s *Service) DeleteUser(req DeleteUserRequest) (*AuthResponse, error) {
+	// Get user by ID
+	user, err := s.repo.GetUserByID(req.ID)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	// Delete user
+	if err := s.repo.DeleteUser(user.ID); err != nil {
+		return nil, fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return &AuthResponse{
+		User:         *user,
+		AccessToken:  "",
+		RefreshToken: "",
+	}, nil
+}
+
 func (s *Service) Login(req LoginRequest) (*AuthResponse, error) {
 	// Get user by email
 	user, err := s.repo.GetUserByEmail(req.Email)

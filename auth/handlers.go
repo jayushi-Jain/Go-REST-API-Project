@@ -95,18 +95,28 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	// var req GetAllUsersRequest
-	// if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-	// 	h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
-	// 	return
-	// }
-
-	// if err := h.validator.Struct(req); err != nil {
-	// 	h.respondWithError(w, http.StatusBadRequest, err.Error())
-	// 	return
-	// }
-
 	response, err := h.service.ViewUsers()
+	if err != nil {
+		h.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	h.respondWithJSON(w, http.StatusOK, response)
+}
+
+func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	var req DeleteUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if err := h.validator.Struct(req); err != nil {
+		h.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	response, err := h.service.DeleteUser(req)
 	if err != nil {
 		h.respondWithError(w, http.StatusBadRequest, err.Error())
 		return

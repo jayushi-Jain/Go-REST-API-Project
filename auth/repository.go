@@ -69,6 +69,20 @@ func (r *Repository) GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
+func (r *Repository) DeleteUser(id int) error {
+	query := `
+		UPDATE users 
+		SET is_active = false, updated_at = $1
+		WHERE id = $2`
+
+	_, err := r.db.Exec(query, time.Now(), id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return nil
+}
+
 func (r *Repository) UpdateUser(user *User) error {
 	query := `
 		UPDATE users 

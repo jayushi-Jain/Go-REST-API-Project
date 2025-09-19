@@ -52,6 +52,10 @@ type UpdateUserRequest struct {
 	Language  string `json:"language"`
 }
 
+type DeleteUserRequest struct {
+	ID int `json:"id" validate:"required"`
+}
+
 // HashPassword hashes a plain text password
 func (u *User) HashPassword(password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
