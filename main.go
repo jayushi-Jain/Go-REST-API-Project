@@ -66,10 +66,12 @@ func setupRoutes(authHandler *auth.Handler) http.Handler {
 
 	// Auth routes
 	authRoutes := api.PathPrefix("/auth").Subrouter()
-	authRoutes.HandleFunc("/register", authHandler.Register).Methods("POST")
-	authRoutes.HandleFunc("/login", authHandler.Login).Methods("POST")
-	authRoutes.HandleFunc("/refresh", authHandler.RefreshToken).Methods("POST")
-	authRoutes.HandleFunc("/logout", authHandler.Logout).Methods("POST")
+	authRoutes.HandleFunc("/view", authHandler.GetAllUsers).Methods("GET")
+	authRoutes.HandleFunc("/create", authHandler.CreateUser).Methods("POST")
+	// authRoutes.HandleFunc("/login", authHandler.Login).Methods("POST")
+	// authRoutes.HandleFunc("/refresh", authHandler.RefreshToken).Methods("POST")
+	// authRoutes.HandleFunc("/logout", authHandler.Logout).Methods("POST")
+	authRoutes.HandleFunc("/update/user", authHandler.UpdateUser).Methods("PUT")
 
 	// Health check
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

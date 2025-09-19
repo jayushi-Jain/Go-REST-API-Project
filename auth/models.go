@@ -24,7 +24,7 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-type RegisterRequest struct {
+type CreateUserRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	Password  string `json:"password" validate:"required,min=8"`
 	FirstName string `json:"first_name" validate:"required"`
@@ -41,6 +41,15 @@ type AuthResponse struct {
 
 type RefreshTokenRequest struct {
 	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
+type UpdateUserRequest struct {
+	ID        int    `json:"id" validate:"required"`
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Country   string `json:"country"`
+	Language  string `json:"language"`
 }
 
 // HashPassword hashes a plain text password

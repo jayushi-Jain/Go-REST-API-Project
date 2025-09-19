@@ -16,7 +16,7 @@ func NewService(repo *Repository, jwtService *JWTService) *Service {
 	}
 }
 
-func (s *Service) Register(req RegisterRequest) (*AuthResponse, error) {
+func (s *Service) CreateUser(req CreateUserRequest) (*AuthResponse, error) {
 	// Check if user already exists
 	_, err := s.repo.GetUserByEmail(req.Email)
 	if err == nil {
@@ -78,6 +78,47 @@ func (s *Service) Login(req LoginRequest) (*AuthResponse, error) {
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *Service) UpdateUser(req UpdateUserRequest) (*AuthResponse, error) {
+	// Get user by ID
+	user, err := s.repo.GetUserByID(req.ID)
+	if err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	// Update user fields
+	user.Email = req.Email
+	user.FirstName = req.FirstName
+	user.LastName = req.LastName
+	user.Country = req.Country
+	user.Language = req.Language
+
+	// Save updated user
+	if err := s.repo.UpdateUser(user); err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+
+	// Generate tokens
+	accessToken, refreshToken, err := s.jwtService.GenerateTokens(user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate tokens: %w", err)
+	}
+
+	return &AuthResponse{
+		User:         *user,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (s *Service) ViewUsers() ([]User, error) {
+	users, err := s.repo.GetAllUsers()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users: %w", err)
+	}
+
+	return users, nil
 }
 
 func (s *Service) RefreshToken(req RefreshTokenRequest) (*AuthResponse, error) {

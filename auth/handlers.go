@@ -31,8 +31,8 @@ func (h *Handler) respondWithJSON(w http.ResponseWriter, code int, payload inter
 	json.NewEncoder(w).Encode(payload)
 }
 
-func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
-	var req RegisterRequest
+func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
@@ -43,7 +43,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := h.service.Register(req)
+	response, err := h.service.CreateUser(req)
 	if err != nil {
 		h.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -67,6 +67,48 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	response, err := h.service.Login(req)
 	if err != nil {
 		h.respondWithError(w, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	h.respondWithJSON(w, http.StatusOK, response)
+}
+
+func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var req UpdateUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if err := h.validator.Struct(req); err != nil {
+		h.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	response, err := h.service.UpdateUser(req)
+	if err != nil {
+		h.respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	h.respondWithJSON(w, http.StatusOK, response)
+}
+
+func (h *Handler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
+	// var req GetAllUsersRequest
+	// if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	// 	h.respondWithError(w, http.StatusBadRequest, "Invalid request body")
+	// 	return
+	// }
+
+	// if err := h.validator.Struct(req); err != nil {
+	// 	h.respondWithError(w, http.StatusBadRequest, err.Error())
+	// 	return
+	// }
+
+	response, err := h.service.ViewUsers()
+	if err != nil {
+		h.respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
